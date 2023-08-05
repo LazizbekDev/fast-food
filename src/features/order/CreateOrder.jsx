@@ -1,11 +1,12 @@
 // https://uibakery.io/regex-library/phone-number
-// const isValidPhone = (str) =>
-//   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
-//     str
-//   );
-
-import {Form, redirect} from "react-router-dom";
+import {Form, redirect, useActionData, useNavigation} from "react-router-dom";
 import {createOrder} from "../../services/apiRestouran.js";
+import {useState} from "react";
+
+const isValidPhone = (str) => {
+  const phoneRegex = /^\+998-\d{2}-\d{3}-\d{4}$/;
+  return phoneRegex.test(str);
+}
 
 const fakeCart = [
   {
@@ -32,8 +33,27 @@ const fakeCart = [
 ];
 
 function CreateOrder() {
+  const navigation = useNavigation();
+  const [num, setNum] = useState('+998');
+  const isSubmitting = navigation.state === 'submitting'
+  const formErrors = useActionData();
   // const [withPriority, setWithPriority] = useState(false);
   const cart = fakeCart;
+
+  function formatPhoneNumber(input) {
+    const cleanedNumber = input.replace(/\D/g, '');
+    const countryCode = cleanedNumber.substring(0, 3);
+    const group1 = cleanedNumber.substring(3, 5);
+    const group2 = cleanedNumber.substring(5, 8);
+    const group3 = cleanedNumber.substring(8, 12);
+
+    let formattedNumber = `+${countryCode}`;
+    if (group1) formattedNumber += `-${group1}`;
+    if (group2) formattedNumber += `-${group2}`;
+    if (group3) formattedNumber += `-${group3}`;
+
+    setNum(formattedNumber);
+  }
 
   return (
     <div>
@@ -48,7 +68,15 @@ function CreateOrder() {
         <div>
           <label>Phone number</label>
           <div>
-            <input type="tel" name="phone" required />
+            <input
+                type="tel"
+                name="phone"
+                placeholder={'+998-xx-xxx-xxxx'}
+                required
+                value={num}
+                onChange={(e) => formatPhoneNumber(e.target.value)}
+            />
+            {formErrors?.phone && <p>{formErrors.phone}</p>}
           </div>
         </div>
 
@@ -72,7 +100,7 @@ function CreateOrder() {
 
         <div>
           <input type={'hidden'} name={'cart'} value={JSON.stringify(cart)} />
-          <button>Order now</button>
+          <button disabled={isSubmitting}>{isSubmitting ? "Ordering..." : "Order now"}</button>
         </div>
       </Form>
     </div>
@@ -87,6 +115,10 @@ export async function action({request}) {
     cart: JSON.parse(data.cart),
     priority: data.priority === "on"
   }
+  // console.log(order)
+  const errors = {}
+  if (!isValidPhone(data.phone)) errors.phone = "Pls, give us ur correct phone number, we might contact with u!";
+  if (Object.keys(errors).length > 0) return errors;
   const newOrder = await createOrder(order)
   return redirect(`/order/${newOrder.id}`);
 }
