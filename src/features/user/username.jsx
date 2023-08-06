@@ -2,7 +2,7 @@ import React from 'react';
 
 const Username = () => {
     return (
-        <div className={'text-sm font-semibold'}>
+        <div className={'hidden text-sm font-semibold md:block'}>
             IbnLaziz
         </div>
     );
