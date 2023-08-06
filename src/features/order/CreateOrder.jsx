@@ -3,6 +3,7 @@ import {Form, redirect, useActionData, useNavigation} from "react-router-dom";
 import {createOrder} from "../../services/apiRestouran.js";
 import {useState} from "react";
 import Button from "../../ui/Button.jsx";
+import Input from "../../ui/Input.jsx";
 
 const isValidPhone = (str) => {
     const phoneRegex = /^\+998-\d{2}-\d{3}-\d{4}$/;
@@ -63,7 +64,7 @@ function CreateOrder() {
             <Form method={'POST'}>
                 <div className={"mb-5 flex flex-col gap-2 sm:flex-row sm:items-center"}>
                     <label className={'sm:basis-40'}>First Name</label>
-                    <input className={'input grow'} type="text" name="customer" required/>
+                    <input className={'input grow focus:ring focus:outline-none focus:ring-yellow-400'} type="text" name="customer" required/>
                 </div>
 
                 <div className={'mb-5 flex flex-col gap-2 sm:flex-row sm:items-center'}>
@@ -74,7 +75,7 @@ function CreateOrder() {
                             name="phone"
                             placeholder={'+998-xx-xxx-xxxx'}
                             required
-                            className={'input w-full'}
+                            className={'input w-full focus:ring focus:outline-none focus:ring-yellow-400'}
                             value={num}
                             onChange={(e) => formatPhoneNumber(e.target.value)}
                         />
@@ -86,7 +87,11 @@ function CreateOrder() {
                 <div className={"mb-5 flex flex-col gap-2 sm:flex-row sm:items-center"}>
                     <label className={'sm:basis-40'}>Address</label>
                     <div className={'grow'}>
-                        <input className={'input w-full'} type="text" name="address" required/>
+                        <Input
+                            type="text"
+                            name="address"
+                            required={true}
+                        />
                     </div>
                 </div>
 
