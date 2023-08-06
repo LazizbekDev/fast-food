@@ -6,7 +6,11 @@ function Menu() {
     const menu = useLoaderData();
     console.log(menu);
 
-    return menu.map(pizza => (<MenuItem key={pizza.id} pizza={pizza} /> ));
+    return (
+        <ul className="divide-y divide-stone-200 px-2">
+            {menu.map(pizza => (<MenuItem key={pizza.id} pizza={pizza} /> ))}
+        </ul>
+    )
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
